@@ -1,0 +1,72 @@
+﻿@{
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="edge" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <title>演示 - jQuery EasyUI 1.5.x Of Insdep theme examples</title>
+    <link href="~/Static/Insdep/themes/insdep/icon.css" rel="stylesheet" />
+    <link href="~/Static/Insdep/themes/insdep/easyui.css" rel="stylesheet" />
+    <script src="~/Static/Insdep/jquery.min.js"></script>
+    <script src="~/Static/Insdep/jquery.easyui.min.js"></script>
+    <script>
+        $(function () {
+            /*布局部分*/
+            $('#master-layout').layout({
+                fit: true/*布局框架全屏*/
+            });
+        });
+    </script>
+    <script>
+    function fun(p) {
+        //获取组件的属性或内容
+        var _url = $(p).attr('url');
+        var _value = $(p).text();
+        if ($("#tt").tabs("exists", _value)) {
+            $("#tt").tabs("select", _value);
+        }
+        else {
+            $("#tt").tabs('add', {
+                title: _value,
+                closable: true,
+                content: '<iframe src="' + _url + '" frameborder=0 height=100% width=100% scrolling=no></iframe>'
+            })
+        }
+    }
+
+    function exit() {
+        $.ajax({
+            url: '@Url.Action("LogOff","Account")',
+            method: 'POST',
+            dataType: 'JSON',
+            data: {},
+            success: function (notify) {
+                if (notify.Status == 200) {
+                    window.location.href = '@Url.Action("Login", "Account")';
+                }
+                else {
+                    alert(notify.Message);
+                }
+            }
+        });
+    }
+    </script>
+
+</head>
+<body id="master-layout" class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style="height:50px"></div>
+    <div data-options="region:'south',split:true" style="height:50px;"></div>
+    @*<div data-options="region:'east',split:true" title="East" style="width:100px;"></div>*@
+    <div data-options="region:'west',split:true" title="菜单栏" style="width:180px;">
+        <ul class="easyui-tree" data-options="url:'/SysMenu/GetMenu?username=admin',method:'get'"></ul>
+    </div>
+    @*<div data-options="region:'center',iconCls:'icon-ok'">
+
+        </div>*@
+    <div id="tt" class="easyui-tabs" data-options="region:'center'" style="background:#eee;">
+    </div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+    <script>
+
+        function resetPwd() {
+            var rows = $('#dg').datagrid('getSelections');
+            if (rows.length != 1) {
+                $.messager.alert("提示", "请选择一个用户！", "error");
+                return;
+            }
+        }
+
+        function options(p) {
+            //新增弹出窗口
+            if (p == 1) {
+                func("#add", 'open');
+            }
+            else {
+                if (p == 4) {//新增提交表单
+                    var _NickNameObj = $("input[name=txtNickName]");
+                    var _NickNameValue = _NickNameObj.val();
+                    if (_NickNameValue == "") {
+                        _NickNameObj.validatebox({
+                            required: true
+                        });
+                        return;
+                    }
+                    var _UserNameObj = $("input[name=txtUserName]");
+                    var _UserNameValue = _UserNameObj.val();
+                    if (_UserNameValue == "") {
+                        _UserNameObj.validatebox({
+                            required: true
+                        });
+                        return;
+                    }
+                    $.ajax({
+                        url: '@Url.Action("AddUser")',
+                        type: 'POST',
+                        contentType: 'application/json;charset=utf-8',
+                        data: JSON.stringify(getFormValue()),
+                        dataType: 'JSON',
+                        success: function (data) {
+                            $('#add').window('close');
+                            window.location.reload();
+                        }
+                    });
+                    return;
+                }
+
+                var rows = $('#dg').datagrid('getSelections');
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "请选择一条记录", "error");
+                    return;
+                }
+                if (p == 2) {//删除
+                    var _roleId = rows[0].Id;
+                    $.ajax({
+                        url: '@Url.Action("DeleteRole")',
+                        method: 'GET',
+                        dataType: 'JSON',
+                        data: { roleId: _roleId },
+                        success: function (notify) {
+                            if (notify.Status == 200) {
+                                func("#set_power", 'close');
+                            }
+                            else {
+                                alert(notify.Message);
+                            }
+                        }
+                    });
+                }
+                    //修改
+                else if (p == 3) {
+                    func($('#add'), 'open');
+                    $("input[name=txtName]").val(rows[0].Name);
+                    $("input[name=txtDesc]").val(rows[0].Description);
+                }
+            }
+        }
+
+
+
+        $(function () {
+            getRoles();
+            $('#dg').datagrid({
+                url: '/SysUser/GetUsers',
+                //title: '用户数据表格',
+                //width: 700,
+                //height: 400,
+                fit: true,
+                methord: 'get',
+                fitColumns: true, //列自适应
+                nowrap: false,
+                idField: 'ID',//主键列的列明
+                loadMsg: '正在加载用户信息...',
+                pagination: true,//是否有分页
+                singleSelect: false,//是否单行选择
+                pageSize: 5,//页大小，一页多少条数据
+                pageNumber: 1,//当前页，默认的
+                pageList: [5, 10, 15],
+                queryParams: {},//往后台传递参数
+                columns: [[//c.UserName, c.UserPass, c.Email, c.RegTime
+                    { field: 'id', checkbox: true, align: 'left', width: 50 },
+                    { field: 'UserName', title: '用户名', width: 80 },
+                    { field: 'NickName', title: '昵称', width: 120 },
+                    { field: 'IsLock', title: '状态', width: 120 },
+                    { field: 'RoleName', title: '所属角色', width: 120 },
+                ]],
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        options(1);
+                    }
+                }, {
+                    id: 'btnDelete',
+                    text: '删除',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        options(2);
+                    }
+                }, {
+                    id: 'btnEdit',
+                    text: '编辑',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        options(3);
+                    }
+                }, {
+                    id: 'btnSetRole',
+                    text: '重置密码',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        resetPwd();
+                    }
+                }],
+            });
+        })
+        //获取所有角色
+        function getRoles() {
+            $.ajax({
+                url: '@Url.Action("GetRoles","SysRole")',
+                method: 'GET',
+                dataType: 'JSON',
+                data: {},
+                success: function (data) {
+                    var _obj = $("#s_role");
+                    var _html = "";
+                    for (var i = 0; i < data.rows.length; i++) {
+                        _html += "<label><input type='checkbox' name='txtAscriptionRole' value=" + data.rows[i].Id + " />" + data.rows[i].Name + "</label>";
+                    }
+                    _obj.append(_html);
+                }
+            });
+        }
+        function func(obj, f) {
+            $(obj).window(f);
+        }
+        function getFormValue() {
+            var json = {
+                userName: $("input[name=txtUserName]").val(),
+                nickName: $("input[name=txtNickName]").val(),
+                roleId: $("input[name=txtAscriptionRole]").val(),
+                description: $("input[name=txtDescription]").val()
+            };
+            console.log(JSON.stringify(json));
+            return json;
+        }
+    </script>
+</head>
+<body>
+    <table id="dg"></table>
+    <!--添加用户start-->
+    <div id="add" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:400px;height:400px;padding:10px;">
+        <form id="fm" style="padding:10px 20px 10px 40px;">
+            <p>昵&nbsp;&nbsp;&nbsp;称：<input type="text" name="txtNickName"></p>
+            <p>用户名：<input type="text" name="txtUserName"></p>
+            <p id="s_role">角色：</p>
+            <p><label>是否禁用：<input class="easyui-checkbox" type="checkbox" name="txtState" /></label></p>
+            <p>描&nbsp;&nbsp;&nbsp;述：<input class="easyui-checkbox" type="text" name="txtDescription" /></p>
+            <div style="padding:5px;text-align:center;">
+                <a href="#" onclick="options(4)" class=" easyui-linkbutton" icon="icon-ok">Ok</a>
+                <a href="#" onclick="func($('#add'), 'close');" class="easyui-linkbutton" icon="icon-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+    <!--添加用户end-->
+</body>
+</html>

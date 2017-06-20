@@ -1,0 +1,61 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+    <script src="~/Static/easyui/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+        document.onkeydown = function (e) {
+            var event = e || window.event;
+            var code = event.keyCode || event.which || event.charCode;
+            if (code == 13) {
+                login();
+            }
+        }
+        $(function () {
+            $("input[name='username']").focus();
+        });
+        function cleardata() {
+            $('#fm').form('clear');
+        }
+        function login() {
+            if ($("input[name='username']").val() == "" || $("input[name='password']").val() == "") {
+                $("#showMsg").html("用户名或密码为空，请输入");
+                $("input[name='username']").focus();
+            } else {
+                //ajax异步提交
+                $.ajax({
+                    type: "POST",   //post提交方式默认是get
+                    url: "@Url.Action("Login")",
+                    data: $("#fm").serialize(),   //序列化
+                    error: function (request) {      // 设置表单提交出错
+                        $("#showMsg").html(request);  //登录错误提示信息
+                    },
+                    success: function (data) {
+                        document.location = "@Url.Action("Index", "Home")";
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="loginWin" class="easyui-window" title="登录" style="width:350px;height:250px;padding:5px;"
+         minimizable="false" maximizable="false" resizable="false" collapsible="false">
+        <form id="fm" style="padding:30px">
+            <p><label><input type="text" value="admin" class="easyui-textbox" data-options="prompt:'用户名'" placeholder="用户名" name="username" /></label></p>
+            <p><label><input type="password" value="admin" class="easyui-textbox" data-options="prompt:'密码'" placeholder="密码" name="password" /></label></p>
+            <p><label><input type="checkbox" placeholder="密码" name="txtRememberMe" />记住我</label><span style="color:red;" id="showMsg"></span></p>
+            <a class="easyui-linkbutton" iconcls="icon-ok" href="javascript:void(0)" onclick="login()">登录</a>
+            <a class="easyui-linkbutton" iconcls="icon-ok" href="javascript:void(0)" onclick="cleardata()">重置</a>
+        </form>
+    </div>
+</body>
+</html>

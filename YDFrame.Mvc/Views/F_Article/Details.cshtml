@@ -1,0 +1,28 @@
+﻿@model YDFrame.Models.YD_Article
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+    <link href="~/Static/F/home.css" rel="stylesheet" />
+</head>
+<body>
+    <div style="margin: 2% 5% 2% 5%">
+        <table>
+            <tbody>
+                <tr>
+                    <td width="60%">
+                        <div style="padding: 2% 8% 5% 8%; border: 1px solid LightGrey;">
+                            <h2>@Model.Title</h2>
+                            @Html.Raw(Model.Content)
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+
+    <script>
+
+
+        function details(id) {
+            var _url = '/F_Article/Details?id=' + id;
+            window.open(_url);
+        }
+
+        function options(p) {
+            //增
+            if (p == 1) {
+                func("#add", 'open');
+            }
+                //删
+            else {
+                if (p == 4) {//提交表单
+                    var _content = UE.getEditor('container').getContent();
+                    var _title = $("input[name=txtTitle]").val();
+                    $.ajax({
+                        url: '@Url.Action("AddArticle")',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: { title: _title, content: _content },
+                        success: function (data, textStatus) {
+                            console.log("textStatus:" + textStatus);
+                            console.log("data:" + data);
+                            if (data.Status == 200) {
+                                func("#add", 'close');
+                                window.location.reload();
+                            } else {
+                                alert(data.Message);
+                            }
+                        }
+                    });
+                }
+                return;
+                var rows = $('#dg').datagrid('getSelections');
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "请选择一条记录", "error");
+                    return;
+                }
+                if (p == 2) {
+                    var _roleId = rows[0].Id;
+                    $.ajax({
+                        url: '@Url.Action("DeleteRole")',
+                        method: 'GET',
+                        dataType: 'JSON',
+                        data: { roleId: _roleId },
+                        success: function (notify) {
+                            if (notify.Status == 200) {
+                                func("#set_power", 'close');
+                            }
+                            else {
+                                alert(notify.Message);
+                            }
+                        }
+                    });
+                }
+                    //改
+                else if (p == 3) {
+                    func($('#add'), 'open');
+                    $("input[name=txtName]").val(rows[0].Name);
+                    $("input[name=txtDesc]").val(rows[0].Description);
+                }
+            }
+        }
+        function setPowers(p) {
+            var rows = $('#dg').datagrid('getSelections');
+            var _roleId = rows[0].Id;
+            var _menuIds = "";
+            if (p == 1) {//入库操作
+                var _node = $("#tt").tree('getChecked');
+                for (var i = 0; i < _node.length; i++) {
+                    _menuIds += _node[i].id + ",";
+                }
+                _menuIds = _menuIds.substring(0, _menuIds.length - 1);
+                $.post('@Url.Action("RoleMenu","SysRole")', { menuIds: _menuIds, roleId: _roleId }, function (data) {
+                    if (data.state == 200) {
+                        $("#set_power").window('close');
+                    }
+                })
+            }
+            else {//点击分配权限按钮时操作
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "选择一条修改的记录", "error");
+                    return;
+                }
+                $("#set_power").window('open');
+                //查询此角色下已有权限
+                $.getJSON('@Url.Action("LoadRoleMenu")', { roleId: _roleId }, function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var _n = $("#tt").tree('find', data[i].MenuId);
+                        if (_n) {
+                            $("#tt").tree('check', _n.target);
+                        }
+                    }
+                })
+            }
+        }
+
+
+        function parseDate(date) {
+            var newTime = new Date(parseInt(date.slice(6, 19)));
+            var newYear = newTime.getFullYear();
+            var newMonth = newTime.getMonth() + 1;
+            var newDate = newTime.getDate();
+            var second = newTime.getSeconds();
+            var hour = newTime.getHours();
+            hour = hour.toString().length == 1 ? "0" + hour : hour;
+            var minute = newTime.getMinutes();
+            second = second.toString().length == 1 ? "0" + second : second;
+            minute = minute.toString().length == 1 ? "0" + minute : minute;
+            var dateTime = newYear + "-" + newMonth + "-" + newDate + " " + hour + ":" + minute + ":" + second;
+            return dateTime;
+        }
+        function func(obj, f) {
+            $(obj).window(f);
+        }
+        $(function () {
+            $('#dg').datagrid({
+                url: '@Url.Action("GetArticles")',
+                //title: '用户数据表格',
+                //width: 700,
+                //height: 400,
+                fit: true,
+                methord: 'get',
+                fitColumns: true, //列自适应
+                nowrap: false,
+                idField: 'ID',//主键列的列明
+                loadMsg: '正在加载角色信息...',
+                pagination: true,//是否有分页
+                singleSelect: false,//是否单行选择
+                pageSize: 5,//页大小，一页多少条数据
+                pageNumber: 1,//当前页，默认的
+                pageList: [5, 10, 15],
+                queryParams: {},//往后台传递参数
+                columns: [[
+                    { field: 'Id', checkbox: true, align: 'left', width: 50 },
+                    { field: 'Title', title: '标题', width: 80 },
+                    {
+                        field: 'CreateTime', title: '发布时间', width: 120, formatter: function (value, row, index) {//value:值, row:JSON对象.
+                            return parseDate(value);
+                        }
+                    },
+                     { field: 'UserId', title: '发布人', width: 120 },
+                     { field: 'See', title: '', width: 120 },
+                ]],
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: '新增',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        options(1);
+                    }
+                }, {
+                    id: 'btnDelete',
+                    text: '删除',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        options(2);
+                    }
+                }, {
+                    id: 'btnEdit',
+                    text: '编辑',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        options(3);
+                    }
+                }]
+            });
+        })
+    </script>
+</head>
+<body>
+    <table id="dg"></table>
+    <!--添加角色start-->
+    <div id="add" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:900px;height:600px;">
+        <form id="fm" style="padding:10px 10px 10px 10px;">
+            <p>文章标题：<input type="text" class="easyui-textbox" size="100" name="txtTitle"></p>
+            <!-- 加载编辑器的容器 -->
+            <script id="container" name="content" type="text/plain" style="width:850px;height:300px;">
+
+            </script>
+            <div style="padding:5px;text-align:center;">
+                <a href="#" onclick="options(4)" class=" easyui-linkbutton" icon="icon-ok">确定</a>
+                <a href="#" onclick="func($('#add'), 'close')" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+    <!--添加角色end-->
+    <!--ueditor-->
+    <!-- 配置文件 -->
+    <script type="text/javascript" src="~/Static/utf8-net/ueditor.config.js"></script>
+    <!-- 编辑器源码文件 -->
+    <script type="text/javascript" src="~/Static/utf8-net/ueditor.all.js"></script>
+    <!-- 实例化编辑器 -->
+    <script type="text/javascript">
+        var ue = UE.getEditor('container');
+    </script>
+</body>
+</html>

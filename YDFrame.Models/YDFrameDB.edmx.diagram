@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d6dfad8f665e4437b2daa21e72f972e6" Name="Diagram1">
+        <EntityTypeShape EntityType="YDFrameModel.Sys_Menu" Width="1.5" PointX="6.75" PointY="4.125" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_Role" Width="1.5" PointX="9.5" PointY="3.875" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_RoleMenu" Width="1.5" PointX="8.625" PointY="1" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_User" Width="1.5" PointX="12.5" PointY="3.5" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_UserRole" Width="1.5" PointX="10.75" PointY="0.75" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_LoginLog" Width="1.5" PointX="12.625" PointY="1" />
+        <EntityTypeShape EntityType="YDFrameModel.YD_Article" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="YDFrameModel.WX_Account" Width="1.5" PointX="3.75" PointY="0.75" />
+        <EntityTypeShape EntityType="YDFrameModel.WX_Type" Width="1.5" PointX="0.75" PointY="3.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

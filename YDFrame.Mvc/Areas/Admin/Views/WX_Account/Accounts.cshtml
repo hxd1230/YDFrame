@@ -1,0 +1,300 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+    <script src="~/Scripts/home.js"></script>
+    <script>
+        function func(obj, f) {
+            $(obj).window(f);
+        }
+        function serializeForm(pms) {
+            var _enable = $("#Enable");
+            var _isDefault = $("#IsDefault");
+            if (!_enable.is(':checked')) {
+                _enable.val('0');
+            }
+            else {
+                _enable.val('1');
+            }
+            if (!_isDefault.is(':checked')) {
+                _isDefault.val('0');
+            }
+            else {
+                _isDefault.val('1');
+            }
+            var _result = $("#fm").serialize();
+            if (pms == "update") {
+                var rows = $('#dg').datagrid('getSelections');
+                var _id = rows[0].Id;
+                _result = $.param({ Id: _id }) + "&" + _result;
+            }
+            return _result;
+        }
+        function options(p, value) {
+            //新增弹出窗口
+            if (p == 1) {
+                func("#dv", 'open');
+            }
+            else {
+                if (p == 4) {//提交表单
+                    if (value == "update") {
+                        $.ajax({
+                            url: '@Url.Action("UpdateAccount")',
+                            method: 'POST',
+                            dataType: 'JSON',
+                            data: serializeForm("update"),
+                            success: function (notify) {
+                                if (notify.Status == 200) {
+                                    func("#dv", 'close');
+                                    window.location.reload();
+                                }
+                                else {
+                                    alert(notify.Message);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        serializeForm("add");
+                        $.ajax({
+                            url: '@Url.Action("AddAccount")',
+                            method: 'POST',
+                            dataType: 'JSON',
+                            data: serializeForm("add"),
+                            success: function (notify) {
+                                if (notify.Status == 200) {
+                                    func("#dv", 'close');
+                                    window.location.reload();
+                                }
+                                else {
+                                    alert(notify.Message);
+                                }
+                            }
+                        });
+                    }
+                    return;
+                }
+                var rows = $('#dg').datagrid('getSelections');
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "请选择一条记录", "error");
+                    return;
+                }
+                if (p == 2) {//删除
+                    if (!confirm("确定删除吗？")) {
+                        return;
+                    }
+                    var rows = $('#dg').datagrid('getSelections');
+                    if (rows.length != 1) {
+                        $.messager.alert("提示", "请选择一条记录", "error");
+                        return;
+                    }
+                    var _id = rows[0].Id;
+                    $.ajax({
+                        url: '@Url.Action("DeleteAccount")',
+                        method: 'POST',
+                        dataType: 'JSON',
+                        data: { id: _id },
+                        success: function (notify) {
+                            if (notify.Status == 200) {
+                                window.location.reload();
+                            }
+                            else {
+                                alert(notify.Message);
+                            }
+                        }
+                    });
+                }
+                    //修改
+                else if (p == 3) {
+                    $("input[name=txtHidden]").val('update');
+                    func($('#dv'), 'open');
+                    $("#AppName").textbox("setValue", rows[0].AppName);
+                    $("#AppCode").textbox("setValue", rows[0].AppCode);
+                    $("#OriginalId").textbox("setValue", rows[0].OriginalId);
+                    $("#TypeId").combobox({
+                        value: rows[0].TypeId,
+                    });
+                    $("#AppUrl").textbox("setValue", rows[0].AppUrl);
+                    $("#AppEncodingAESKey").textbox("setValue", rows[0].AppEncodingAESKey);
+                    $("#AppToken").textbox("setValue", rows[0].AppToken);
+                    $("#AppId").textbox("setValue", rows[0].AppId);
+                    $("#AppSecret").textbox("setValue", rows[0].AppSecret);
+                    $("#AccessToken").textbox("setValue", rows[0].AccessToken);
+                    var _isEnable = rows[0].Enable;
+                    if (_isEnable == 1) {//不选中
+                        $("#Enable").removeAttr('checked');
+                    }
+                    var _isDefault = rows[0].IsDefault;
+                    if (_isDefault == 1) {//不选中
+                        $("#IsDefault").removeAttr('checked');
+                    }
+                }
+            }
+        }
+        function loadType() {
+            $("#TypeId").combobox({
+                url: '@Url.Action("GetTypes", "WX_Type")',
+                valueField: 'Id',
+                textField: 'Name',
+                value: 1,
+                width: '80px'
+            });
+        }
+        $(function () {
+            $('#dg').datagrid({
+                url: '@Url.Action("GetAccounts")',
+                rownumbers: true,
+                fit: true,
+                methord: 'get',
+                fitColumns: true, //列自适应
+                nowrap: false,
+                idField: 'Id',//主键列的列明
+                loadMsg: '正在加载公众号信息...',
+                pagination: true,//是否有分页
+                singleSelect: false,//是否单行选择
+                pageSize: 5,//页大小，一页多少条数据
+                pageNumber: 1,//当前页，默认的
+                pageList: [5, 10, 15],
+                queryParams: {},//往后台传递参数
+                columns: [[
+                    { field: 'Id', checkbox: true, align: 'left', width: 50 },
+                    { field: 'OriginalId', title: '原始Id', },
+                    { field: 'AppName', title: '公众号名', },
+                    { field: 'AppCode', title: '公众号', },
+                    { field: 'AppPic', title: '头像', },
+                    { field: 'AppUrl', title: '资源服务器', },
+                    { field: 'AppEncodingAESKey', title: '密钥', },
+                    { field: 'AppToken', title: '自定义token', },
+                    { field: 'AppId', title: 'AppId', },
+                    { field: 'AppSecret', title: 'AppSecret', },
+                    { field: 'AccessToken', title: '访问Token', },
+                    { field: 'TypeId', title: '类型', },
+                    {
+                        field: 'Enable', title: '启用', formatter: function (value, row, index) {
+                            return value == 1 ? '未启用' : "启用";
+                        }
+                    },
+                    {
+                        field: 'IsDefault', title: '是否默认', formatter: function (value, row, index) {
+                            return value == 1 ? '否' : "是";
+                        }
+                    },
+                     {
+                         field: 'CreateTime', title: '创建时间', formatter: function (value, row, index) {
+                             if (value != null) {
+                                 return parseDate(value);
+                             }
+                         }
+                     },
+                      {
+                          field: 'ModifyTime', title: '修改时间', formatter: function (value, row, index) {
+                              if (value != null) {
+                                  return parseDate(value);
+                              }
+                          }
+                      },
+                ]],
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: '新增',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        options(1);
+                    }
+                }, {
+                    id: 'btnDelete',
+                    text: '删除',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        options(2);
+                    }
+                }, {
+                    id: 'btnEdit',
+                    text: '编辑',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        options(3);
+                    }
+                }],
+            });
+            loadType();
+        })
+    </script>
+</head>
+<body>
+    <table id="dg"></table>
+    <div id="dv" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:400px;height:580px;padding:40px;">
+        <form id="fm" method="post">
+            <table cellpadding="5">
+                <tr>
+                    <td>公众号名:</td>
+                    <td><input class="easyui-textbox" id="AppName" type="text" name="AppName" /></td>
+                </tr>
+                <tr>
+                    <td>公众号:</td>
+                    <td><input class="easyui-textbox" id="AppCode" type="text" name="AppCode" /></td>
+                </tr>
+                <tr>
+                    <td>原始Id:</td>
+                    <td><input class="easyui-textbox" id="OriginalId" type="text" name="OriginalId" /></td>
+                </tr>
+                <tr>
+                    <td>公众号类型:</td>
+                    <td>
+                        <select class="easyui-combobox" id="TypeId" name="TypeId"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>服务器地址:</td>
+                    <td><input class="easyui-textbox" id="AppUrl" type="text" name="AppUrl" /></td>
+                </tr>
+                <tr>
+                    <td>秘钥:</td>
+                    <td><input class="easyui-textbox" id="AppEncodingAESKey" type="text" name="AppEncodingAESKey" /></td>
+                </tr>
+                <tr>
+                    <td>自定义Token:</td>
+                    <td><input class="easyui-textbox" id="AppToken" type="text" name="AppToken" /></td>
+                </tr>
+                <tr>
+                    <td>AppId:</td>
+                    <td><input class="easyui-textbox" id="AppId" type="text" name="AppId" /></td>
+                </tr>
+                <tr>
+                    <td>AppSecret:</td>
+                    <td><input class="easyui-textbox" id="AppSecret" type="text" name="AppSecret" /></td>
+                </tr>
+                <tr>
+                    <td>访问Token:</td>
+                    <td><input class="easyui-textbox" id="AccessToken" type="text" name="AccessToken" /></td>
+                </tr>
+                <tr>
+                    <td><label for="Enable">是否启用:</label></td>
+                    <td>
+                        <input id="Enable" name="Enable" type="checkbox" checked="checked" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="IsDefault">是否默认:</label></td>
+                    <td>
+                        <input id="IsDefault" name="IsDefault" type="checkbox" checked="checked" />
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" name="txtHidden" value="add" />
+        </form>
+        <div style="text-align:center;padding:5px">
+            <a href="javascript:void(0)" onclick="options(4,$('input[name=txtHidden]').val())" class=" easyui-linkbutton" icon="icon-ok">确定</a>
+        </div>
+    </div>
+</body>
+</html>

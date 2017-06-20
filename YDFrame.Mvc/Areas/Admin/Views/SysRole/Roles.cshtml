@@ -1,0 +1,187 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+    <script>
+        function options(p) {
+            //增
+            if (p == 1) {
+                func("#add", 'open');
+            }
+                //删
+            else {
+                var rows = $('#dg').datagrid('getSelections');
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "请选择一条记录", "error");
+                    return;
+                }
+                if (p == 2) {
+                    var _roleId = rows[0].Id;
+                    $.ajax({
+                        url: '@Url.Action("DeleteRole")',
+                        method: 'GET',
+                        dataType: 'JSON',
+                        data: { roleId: _roleId },
+                        success: function (notify) {
+                            if (notify.Status == 200) {
+                                func("#set_power", 'close');
+                            }
+                            else {
+                                alert(notify.Message);
+                            }
+                        }
+                    });
+                }
+                    //改
+                else if (p == 3) {
+                    func($('#add'), 'open');
+                    $("input[name=txtName]").val(rows[0].Name);
+                    $("input[name=txtDesc]").val(rows[0].Description);
+                }
+                else if (p == 4) {
+                    var _name = $("input[name=txtName]").val();
+                    var _des = $("input[name=txtDesc]").val();
+                    var _state = $("input[name=txtState]").val();
+                    $.post('@Url.Action("AddRole")', { name: _name, description: _des, state: _state }, function (data) {
+                        if (data.state == 200) {
+                            $('#add').window('close');
+                            window.location.reload();
+                        }
+                    });
+                }
+            }
+        }
+
+        function setPowers(p) {
+            var rows = $('#dg').datagrid('getSelections');
+            if (rows.length != 1) {
+                $.messager.alert("提示", "请选择待分配角色！", "error");
+                return;
+            }
+            var _roleId = rows[0].Id;
+            var _menuIds = "";
+            if (p == 1) {//入库操作
+                var _node = $("#tt").tree('getChecked');
+                for (var i = 0; i < _node.length; i++) {
+                    _menuIds += _node[i].id + ",";
+                }
+                _menuIds = _menuIds.substring(0, _menuIds.length - 1);
+                $.post('@Url.Action("RoleMenu","SysRole")', { menuIds: _menuIds, roleId: _roleId }, function (data) {
+                    if (data.state == 200) {
+                        $("#set_power").window('close');
+                    }
+                })
+            }
+            else {//点击分配权限按钮时操作
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "选择一条修改的记录", "error");
+                    return;
+                }
+                $("#set_power").window('open');
+                //查询此角色下已有权限
+                $.getJSON('@Url.Action("LoadRoleMenu")', { roleId: _roleId }, function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var _n = $("#tt").tree('find', data[i].MenuId);
+                        if (_n) {
+                            $("#tt").tree('check', _n.target);
+                        }
+                    }
+                })
+            }
+        }
+        function func(obj, f) {
+            $(obj).window(f);
+        }
+        $(function () {
+            $('#dg').datagrid({
+                url: '/SysRole/GetRoles',
+                //title: '用户数据表格',
+                //width: 700,
+                //height: 400,
+                fit: true,
+                methord: 'get',
+                fitColumns: true, //列自适应
+                nowrap: false,
+                idField: 'ID',//主键列的列明
+                loadMsg: '正在加载角色信息...',
+                pagination: true,//是否有分页
+                singleSelect: false,//是否单行选择
+                pageSize: 5,//页大小，一页多少条数据
+                pageNumber: 1,//当前页，默认的
+                pageList: [5, 10, 15],
+                queryParams: {},//往后台传递参数
+                columns: [[//c.UserName, c.UserPass, c.Email, c.RegTime
+                    { field: 'Id', checkbox: true, align: 'left', width: 50 },
+                    { field: 'Name', title: '角色名', width: 80 },
+                    { field: 'Description', title: '角色描述', width: 120 },
+                ]],
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: '新增',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        options(1);
+                    }
+                }, {
+                    id: 'btnDelete',
+                    text: '删除',
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        options(2);
+                    }
+                }, {
+                    id: 'btnEdit',
+                    text: '编辑',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        options(3);
+                    }
+                }, {
+                    id: 'btnSetRole',
+                    text: '分配权限',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        setPowers(0);
+                    }
+                }],
+            });
+        })
+    </script>
+</head>
+<body>
+    <table id="dg"></table>
+    <!--添加角色start-->
+    <div id="add" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:400px;height:400px;padding:10px;">
+        <form id="fm" style="padding:10px 20px 10px 40px;">
+            <p>角色名：<input type="text" name="txtName"></p>
+            <p>描&nbsp;&nbsp;&nbsp;述：<input type="text" name="txtDesc"></p>
+            <p><label>是否禁用：<input type="checkbox" name="txtState" /></label></p>
+            <div style="padding:5px;text-align:center;">
+                <a href="#" onclick="options(4)" class=" easyui-linkbutton" icon="icon-ok">确定</a>
+                <a href="#" onclick="func($('#add'), 'close')" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+    <!--添加角色end-->
+    <!--分配权限start-->
+    <div id="set_power" class="easyui-window" title="权限编辑"
+         style="width: 500px; height: 500px;" closed="true">
+        <form style="padding: 10px 20px 10px 40px;">
+            <ul id="tt" class="easyui-tree" url="@Url.Action("LoadMenu", "SysMenu", new { userName = "admin" })" method="get"
+                checkbox="true"></ul>
+            <div style="padding: 5px; text-align: center;">
+                <a href="#" class="easyui-linkbutton" icon="icon-ok" onclick="setPowers(1);">确定</a>
+            </div>
+        </form>
+    </div>
+    <!--分配权限end-->
+</body>
+</html>

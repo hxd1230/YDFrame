@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+    <script src="~/Static/easyui/easyui-lang-zh_CN.js"></script>
+    <script>
+
+        $(function () {
+            test();
+        })
+
+        function fun(p) {
+            //获取组件的属性或内容
+            var _url = $(p).attr('url');
+            var _value = $(p).text();
+            if ($("#tt").tabs("exists", _value)) {
+                $("#tt").tabs("select", _value);
+            }
+            else {
+                $("#tt").tabs('add', {
+                    title: _value,
+                    closable: true,
+                    content: '<iframe src="' + _url + '" frameborder=0 height=100% width=100% scrolling=no></iframe>'
+                })
+            }
+        }
+
+
+        function test() {
+            console.log('刚进来');
+            if ($("#tt").tabs("exists", '我的桌面')) {
+                $("#tt").tabs("select", '我的桌面');
+            }
+            else {
+                console.log('进来了');
+                $("#tt").tabs('add', {
+                    title: '我的桌面',
+                    closable: true,
+                    content: '<iframe src="http://www.baidu.com/" frameborder=0 height=100% width=100% scrolling=no></iframe>'
+                })
+            }
+        }
+        
+        function exit() {
+            $.ajax({
+                url: '@Url.Action("LogOff","Account")',
+                method: 'POST',
+                dataType: 'JSON',
+                async: true,
+                data: {},
+                success: function (notify) {
+                    if (notify.Status == 200) {
+                        window.location.href = '@Url.Action("Login", "Account")';
+                    }
+                    else {
+                        alert(notify.Message);
+                    }
+                }
+            });
+        }
+    </script>
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        #top_right {
+            float: right;
+        }
+    </style>
+</head>
+<body class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'">
+        <img src="~/Static/images/logo.png" style="height:78px" />
+        <div id="top_right">
+            欢迎您:<span id="uname">@ViewBag.User<a href="javascript:;" onclick="exit();">退出</a></span>
+        </div>
+    </div>
+    <div data-options="region:'south'" style="height:24px;"></div>
+    <div id="menu" data-options="region:'west',title:'菜单栏',split:true" style="width:180px;" class="easyui-panel">
+        <ul class="easyui-tree" data-options="url:'/SysMenu/GetMenu?username=@ViewBag.User',method:'get'"></ul>
+    </div>
+    <div id="tt" class="easyui-tabs" data-options="region:'center',border:false">
+    </div>
+    <script>
+        //test();
+    </script>
+</body>
+</html>
