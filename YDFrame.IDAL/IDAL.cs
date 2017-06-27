@@ -11,7 +11,12 @@ namespace YDFrame.IDAL
 {
    
 	
-	public partial interface ISys_LoginLogRepository :IBaseRepository<Sys_LoginLog>
+	public partial interface ISys_ErrorRepository :IBaseRepository<Sys_Error>
+    {
+      
+    }
+	
+	public partial interface ISys_LogRepository :IBaseRepository<Sys_Log>
     {
       
     }

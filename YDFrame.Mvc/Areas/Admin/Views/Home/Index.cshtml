@@ -6,8 +6,9 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
+    <link href="~/Static/Easyui/themes/bootstrap/easyui.css" rel="stylesheet" />
     <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
-    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    @*<link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />*@
     <script src="~/Static/easyui/jquery.min.js"></script>
     <script src="~/Static/easyui/jquery.easyui.min.js"></script>
     <script src="~/Static/easyui/easyui-lang-zh_CN.js"></script>
@@ -51,14 +52,14 @@
         
         function exit() {
             $.ajax({
-                url: '@Url.Action("LogOff","Account")',
+                url: '@Url.Action("LogOff","AccountInfo")',
                 method: 'POST',
                 dataType: 'JSON',
                 async: true,
                 data: {},
                 success: function (notify) {
                     if (notify.Status == 200) {
-                        window.location.href = '@Url.Action("Login", "Account")';
+                        window.location.href = '@Url.Action("Login", "AccountInfo")';
                     }
                     else {
                         alert(notify.Message);
@@ -83,7 +84,22 @@
         <div id="top_right">
             欢迎您:<span id="uname">@ViewBag.User<a href="javascript:;" onclick="exit();">退出</a></span>
         </div>
+        
     </div>
+    @*<div data-options="region:'north',border:false" style="height: 60px; background-color: #F5F5F5; padding: 10px; font-size: x-large;">
+        <img src="~/Content/images/Logo.png" /> 后台权限管理系统
+        <div style="position: absolute; right: 5px; top: 10px;">
+            欢迎您：<span style="color: #0082ff; ">@ViewBag.RealName</span>  @ViewBag.TimeView   @ViewBag.DayDate
+        </div>
+        <div style="position: absolute; right: 0px; bottom: 0px; ">
+            <a href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-set1'" onclick="changePwd('');">
+                修改密码
+            </a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-stop'" onclick="loginOut();">
+                退出系统
+            </a>
+        </div>
+    </div>*@
     <div data-options="region:'south'" style="height:24px;"></div>
     <div id="menu" data-options="region:'west',title:'菜单栏',split:true" style="width:180px;" class="easyui-panel">
         <ul class="easyui-tree" data-options="url:'/SysMenu/GetMenu?username=@ViewBag.User',method:'get'"></ul>

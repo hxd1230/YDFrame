@@ -1,0 +1,214 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Errors</title>
+    <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Static/easyui/jquery.min.js"></script>
+    <script src="~/Static/easyui/jquery.easyui.min.js"></script>
+    <script>
+        function func(obj, f) {
+            $(obj).window(f);
+        }
+        function serializeForm(pms) {
+            var _result = "";
+            var _isHide = 0;
+            if (!$("#txtIsHide").is(':checked')) {
+                _isHide = 1;
+            }
+            var _value = $("#fm").serialize();
+            if (pms == "add") {
+                _result = $.param({ isHide: _isHide }) + "&" + _value;
+            }
+            else {
+                var _id = $('#dg').datagrid('getSelections')[0].id;
+                _result = $.param({ menuId: _id, txtIsHide: _isHide }) + "&" + _value;
+            }
+            _result;
+            return _result;
+        }
+        function options(p, value) {
+            //新增弹出窗口
+            if (p == 1) {
+                func("#dv", 'open');
+            }
+            else {
+                if (p == 4) {//提交表单
+                    var _nameObj = $("input[name=txtName]");
+                    var _nameValue = _nameObj.val();
+                    if (_nameValue == "") {
+                        _nameObj.validatebox({
+                            required: true
+                        });
+                        return;
+                    }
+                    var _desObj = $("input[name=txtDesc]");
+                    var _desValue = _desObj.val();
+                    var _urlObj = $("input[name=txtUrl]");
+                    var _urlValue = _urlObj.val();
+                    var _parentIdObj = $("#selMenu option:selected");
+                    var _parentIdValue = _parentIdObj.val();
+                    if (value == "update") {
+                        $.ajax({
+                            url: '@Url.Action("UpdateMenu")',
+                            method: 'POST',
+                            dataType: 'JSON',
+                            data: serializeForm(),
+                            success: function (notify) {
+                                if (notify.Status == 200) {
+                                    func("#dv", 'close');
+                                    window.location.reload();
+                                }
+                                else {
+                                    alert(notify.Message);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        $.ajax({
+                            url: '@Url.Action("AddMenu")',
+                            method: 'POST',
+                            dataType: 'JSON',
+                            data: serializeForm("add"),
+                            success: function (notify) {
+                                if (notify.Status == 200) {
+                                    func("#dv", 'close');
+                                    window.location.reload();
+                                }
+                                else {
+                                    alert(notify.Message);
+                                }
+                            }
+                        });
+                    }
+                }
+                return;
+                var rows = $('#dg').datagrid('getSelections');
+                if (rows.length != 1) {
+                    $.messager.alert("提示", "请选择一条记录", "error");
+                    return;
+                }
+                if (p == 2) {//删除
+                    if (!confirm("确定删除吗？")) {
+                        return;
+                    }
+                    var rows = $('#dg').datagrid('getSelections');
+                    if (rows.length != 1) {
+                        $.messager.alert("提示", "请选择一条记录", "error");
+                        return;
+                    }
+                    var _menuId = rows[0].id;
+                    $.ajax({
+                        url: '@Url.Action("DeleteMenu")',
+                        method: 'POST',
+                        dataType: 'JSON',
+                        data: { menuId: _menuId },
+                        success: function (notify) {
+                            if (notify.Status == 200) {
+                                window.location.reload();
+                            }
+                            else {
+                                alert(notify.Message);
+                            }
+                        }
+                    });
+                }
+                    //修改
+                else if (p == 3) {
+                    $("input[name=txtHidden]").val('update');
+                    func($('#dv'), 'open');
+                    $("input[name=txtName]").val(rows[0].text);
+                    $("input[name=txtDesc]").val(rows[0].desc);
+                    $("input[name=txtUrl]").val(rows[0].url);
+                    $("input[name=txtIsHide]").val(rows[0].isHide);
+                }
+            }
+        }
+        function loadLevelMenu() {
+            $.post('@Url.Action("GetMenu")', { userName: 'admin' }, function (data) {
+                var _pLength = data.length;
+                var html = "<option value='0'>---顶级目录---</option>";
+                for (var i = 0; i < _pLength; i++) {
+                    html += "<option value='" + data[i].id + "'>" + data[i].text + "</option>";
+                    var _sLength = data[i].children.length;
+                    for (var j = 0; j < _sLength ; j++) {
+                        html += "<option value='" + data[i].children[j].id + "'>" + '&nbsp;&nbsp;' + data[i].children[j].text + "</option>";
+                    }
+                }
+                $("#selMenu").append(html);
+            })
+        }
+        $(function () {
+            //loadLevelMenu();
+            $('#dg').treegrid({
+                url: '@Url.Action("GetErrors")',
+                rownumbers: true,
+                treeField: 'text',
+                fit: true,
+                methord: 'get',
+                fitColumns: true, //列自适应
+                nowrap: false,
+                idField: 'id',//主键列的列明
+                loadMsg: '正在加载菜单信息...',
+                pagination: true,//是否有分页
+                singleSelect: false,//是否单行选择
+                pageSize: 5,//页大小，一页多少条数据
+                pageNumber: 1,//当前页，默认的
+                pageList: [5, 10, 15],
+                queryParams: {},//往后台传递参数
+                columns: [[
+                    { field: 'id', checkbox: true, align: 'left', width: 50 },
+                    { field: 'StackTrace', title: '堆栈', width: 80 },
+                    { field: 'Message', title: '详细', width: 120 },
+                    { field: 'Level', title: '等级', width: 120 },
+                    { field: 'OccurTime', title: '发生时间', width: 120 },
+                ]],
+                //toolbar: [{
+                //    id: 'btnAdd',
+                //    text: '添加',
+                //    iconCls: 'icon-add',
+                //    handler: function () {
+                //        options(1);
+                //    }
+                //}, {
+                //    id: 'btnDelete',
+                //    text: '删除',
+                //    iconCls: 'icon-remove',
+                //    handler: function () {
+                //        options(2);
+                //    }
+                //}, {
+                //    id: 'btnEdit',
+                //    text: '编辑',
+                //    iconCls: 'icon-edit',
+                //    handler: function () {
+                //        options(3);
+                //    }
+                //}],
+            });
+        })
+    </script>
+</head>
+<body>
+    <table id="dg"></table>
+    <div id="dv" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:400px;height:400px;padding:10px;">
+        <form id="fm" style="padding:10px 20px 10px 40px;">
+            <p>菜单名称：<input type="text" name="txtName"></p>
+            <p>菜单地址：<input type="text" name="txtUrl"></p>
+            <p>菜单描述：<input type="text" name="txtDesc"></p>
+            <p><label>是否可用：<input type="checkbox" id="txtIsHide" name="txtIsHide" checked="checked"></label></p>
+            <p>上级菜单：<select name="txtParentId" id="selMenu"></select></p>
+            <div style="padding:5px;text-align:center;">
+                <a href="#" onclick="options(4,$('input[name=txtHidden]').val())" class=" easyui-linkbutton" icon="icon-ok">确定</a>
+                @*<a href="#" onclick="javascript: self.close();" class="easyui-linkbutton" icon="icon-cancel">Cancel</a>*@
+            </div>
+            <input type="hidden" name="txtHidden" value="add" />
+        </form>
+    </div>
+</body>
+</html>

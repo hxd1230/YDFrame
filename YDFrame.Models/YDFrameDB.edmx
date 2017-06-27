@@ -5,17 +5,26 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="YDFrameModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <!--生成过程中发现错误:
-警告 6002: 表/视图“YDFrame.dbo.Sys_LoginLog”未定义主键。已推断出该键，并将定义创建为只读的表/视图。-->
-        <EntityType Name="Sys_LoginLog">
+        <EntityType Name="Sys_Error">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OccurTime" Type="datetime" />
+          <Property Name="Level" Type="varchar" MaxLength="255" />
+          <Property Name="Message" Type="text" />
+          <Property Name="StackTrace" Type="text" />
+          <Property Name="Origin" Type="text" />
+        </EntityType>
+        <EntityType Name="Sys_Log">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserId" Type="int" />
-          <Property Name="LoginTime" Type="datetime" />
+          <Property Name="OccurTime" Type="datetime" />
           <Property Name="LoginIp" Type="varchar" MaxLength="16" />
-          <Property Name="LoginOutTime" Type="datetime" />
+          <Property Name="Type" Type="int" />
         </EntityType>
         <EntityType Name="Sys_Menu">
           <Key>
@@ -106,6 +115,8 @@
           <Property Name="UserId" Type="int" />
         </EntityType>
         <EntityContainer Name="YDFrameModelStoreContainer">
+          <EntitySet Name="Sys_Error" EntityType="Self.Sys_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sys_Log" EntityType="Self.Sys_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sys_Menu" EntityType="Self.Sys_Menu" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sys_Role" EntityType="Self.Sys_Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sys_RoleMenu" EntityType="Self.Sys_RoleMenu" Schema="dbo" store:Type="Tables" />
@@ -114,15 +125,6 @@
           <EntitySet Name="WX_Account" EntityType="Self.WX_Account" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WX_Type" EntityType="Self.WX_Type" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="YD_Article" EntityType="Self.YD_Article" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Sys_LoginLog" EntityType="Self.Sys_LoginLog" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [Sys_LoginLog].[Id] AS [Id], 
-    [Sys_LoginLog].[UserId] AS [UserId], 
-    [Sys_LoginLog].[LoginTime] AS [LoginTime], 
-    [Sys_LoginLog].[LoginIp] AS [LoginIp], 
-    [Sys_LoginLog].[LoginOutTime] AS [LoginOutTime]
-    FROM [dbo].[Sys_LoginLog] AS [Sys_LoginLog]</DefiningQuery>
-          </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -134,10 +136,11 @@
           <EntitySet Name="Sys_RoleMenu" EntityType="YDFrameModel.Sys_RoleMenu" />
           <EntitySet Name="Sys_User" EntityType="YDFrameModel.Sys_User" />
           <EntitySet Name="Sys_UserRole" EntityType="YDFrameModel.Sys_UserRole" />
-          <EntitySet Name="Sys_LoginLog" EntityType="YDFrameModel.Sys_LoginLog" />
           <EntitySet Name="YD_Article" EntityType="YDFrameModel.YD_Article" />
           <EntitySet Name="WX_Account" EntityType="YDFrameModel.WX_Account" />
           <EntitySet Name="WX_Type" EntityType="YDFrameModel.WX_Type" />
+          <EntitySet Name="Sys_Error" EntityType="YDFrameModel.Sys_Error" />
+          <EntitySet Name="Sys_Log" EntityType="YDFrameModel.Sys_Log" />
         </EntityContainer>
         <EntityType Name="Sys_Menu">
           <Key>
@@ -189,16 +192,6 @@
           <Property Name="UserId" Type="Int32" />
           <Property Name="RoleId" Type="Int32" />
         </EntityType>
-        <EntityType Name="Sys_LoginLog">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserId" Type="Int32" />
-          <Property Name="LoginTime" Type="DateTime" Precision="3" />
-          <Property Name="LoginIp" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
-          <Property Name="LoginOutTime" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="YD_Article">
           <Key>
             <PropertyRef Name="Id" />
@@ -236,6 +229,27 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Sys_Error">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OccurTime" Type="DateTime" Precision="3" />
+          <Property Name="Level" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StackTrace" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Origin" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Sys_Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="OccurTime" Type="DateTime" Precision="3" />
+          <Property Name="LoginIp" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="Int32" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -298,17 +312,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Sys_LoginLog">
-            <EntityTypeMapping TypeName="YDFrameModel.Sys_LoginLog">
-              <MappingFragment StoreEntitySet="Sys_LoginLog">
-                <ScalarProperty Name="LoginOutTime" ColumnName="LoginOutTime" />
-                <ScalarProperty Name="LoginIp" ColumnName="LoginIp" />
-                <ScalarProperty Name="LoginTime" ColumnName="LoginTime" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="YD_Article">
             <EntityTypeMapping TypeName="YDFrameModel.YD_Article">
               <MappingFragment StoreEntitySet="YD_Article">
@@ -346,6 +349,29 @@
             <EntityTypeMapping TypeName="YDFrameModel.WX_Type">
               <MappingFragment StoreEntitySet="WX_Type">
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sys_Error">
+            <EntityTypeMapping TypeName="YDFrameModel.Sys_Error">
+              <MappingFragment StoreEntitySet="Sys_Error">
+                <ScalarProperty Name="Origin" ColumnName="Origin" />
+                <ScalarProperty Name="StackTrace" ColumnName="StackTrace" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="OccurTime" ColumnName="OccurTime" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sys_Log">
+            <EntityTypeMapping TypeName="YDFrameModel.Sys_Log">
+              <MappingFragment StoreEntitySet="Sys_Log">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="LoginIp" ColumnName="LoginIp" />
+                <ScalarProperty Name="OccurTime" ColumnName="OccurTime" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

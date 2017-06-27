@@ -12,7 +12,12 @@ using System.Threading.Tasks;
 namespace YDFrame.DAL
 {
 		
-	public partial class Sys_LoginLogRepository :BaseRepository<Sys_LoginLog>,ISys_LoginLogRepository
+	public partial class Sys_ErrorRepository :BaseRepository<Sys_Error>,ISys_ErrorRepository
+    {
+
+    }
+		
+	public partial class Sys_LogRepository :BaseRepository<Sys_Log>,ISys_LogRepository
     {
 
     }

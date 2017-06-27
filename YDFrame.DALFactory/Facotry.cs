@@ -8,12 +8,20 @@ namespace YDFrame.DALFactory
     public partial class AbstractFactory
     {
 		
-	    public static ISys_LoginLogRepository CreateSys_LoginLogRepository()
+	    public static ISys_ErrorRepository CreateSys_ErrorRepository()
         {
-            string classFulleName = ConfigUtil.GetAppSettings("NameSpace") + ".Sys_LoginLogRepository";
+            string classFulleName = ConfigUtil.GetAppSettings("NameSpace") + ".Sys_ErrorRepository";
 			string assembly = ConfigUtil.GetAppSettings("DalAssembly");
             var obj  = CreateInstance( classFulleName,assembly);
-            return obj as ISys_LoginLogRepository;
+            return obj as ISys_ErrorRepository;
+        }
+		
+	    public static ISys_LogRepository CreateSys_LogRepository()
+        {
+            string classFulleName = ConfigUtil.GetAppSettings("NameSpace") + ".Sys_LogRepository";
+			string assembly = ConfigUtil.GetAppSettings("DalAssembly");
+            var obj  = CreateInstance( classFulleName,assembly);
+            return obj as ISys_LogRepository;
         }
 		
 	    public static ISys_MenuRepository CreateSys_MenuRepository()

@@ -11,7 +11,12 @@ using System.Threading.Tasks;
 namespace YDFrame.IBLL
 {
 	
-	public partial interface ISys_LoginLogService : IBaseService<Sys_LoginLog>
+	public partial interface ISys_ErrorService : IBaseService<Sys_Error>
+    {
+       
+    }   
+	
+	public partial interface ISys_LogService : IBaseService<Sys_Log>
     {
        
     }   

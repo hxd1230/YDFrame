@@ -10,10 +10,11 @@
         <EntityTypeShape EntityType="YDFrameModel.Sys_RoleMenu" Width="1.5" PointX="8.625" PointY="1" />
         <EntityTypeShape EntityType="YDFrameModel.Sys_User" Width="1.5" PointX="12.5" PointY="3.5" />
         <EntityTypeShape EntityType="YDFrameModel.Sys_UserRole" Width="1.5" PointX="10.75" PointY="0.75" />
-        <EntityTypeShape EntityType="YDFrameModel.Sys_LoginLog" Width="1.5" PointX="12.625" PointY="1" />
         <EntityTypeShape EntityType="YDFrameModel.YD_Article" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="YDFrameModel.WX_Account" Width="1.5" PointX="3.75" PointY="0.75" />
         <EntityTypeShape EntityType="YDFrameModel.WX_Type" Width="1.5" PointX="0.75" PointY="3.75" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_Error" Width="1.5" PointX="3.375" PointY="5.75" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_Log" Width="1.5" PointX="0.75" PointY="6.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

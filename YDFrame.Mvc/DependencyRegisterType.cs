@@ -38,6 +38,12 @@ namespace YDFrame.Mvc
 
             container.RegisterType<IWX_TypeRepository, WX_TypeRepository>();
             container.RegisterType<IWX_TypeService, WX_TypeService>();
+
+            container.RegisterType<ISys_ErrorRepository, Sys_ErrorRepository>();
+            container.RegisterType<ISys_ErrorService, Sys_ErrorService>();
+
+            container.RegisterType<ISys_LogRepository, Sys_LogRepository>();
+            container.RegisterType<ISys_LogService, Sys_LogService>();
         }
     }
 }

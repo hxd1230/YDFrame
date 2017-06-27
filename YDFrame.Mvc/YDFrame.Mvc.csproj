@@ -152,6 +152,8 @@
     <Compile Include="Areas\Admin\Controllers\ArticleController.cs" />
     <Compile Include="Areas\Admin\Controllers\AccountInfoController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Admin\Controllers\SysErrorController.cs" />
+    <Compile Include="Areas\Admin\Controllers\SysLogController.cs" />
     <Compile Include="Areas\Admin\Controllers\SysMenuController.cs" />
     <Compile Include="Areas\Admin\Controllers\SysRoleController.cs" />
     <Compile Include="Areas\Admin\Controllers\SysUserController.cs" />
@@ -2734,6 +2736,8 @@
     <Content Include="Areas\Admin\Views\Article\Articles.cshtml" />
     <Content Include="Areas\Admin\Views\Article\AddArticle.cshtml" />
     <Content Include="Areas\Admin\Views\WX_Account\Accounts.cshtml" />
+    <Content Include="Areas\Admin\Views\SysError\Errors.cshtml" />
+    <Content Include="Areas\Admin\Views\SysLog\Logs.cshtml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />

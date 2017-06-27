@@ -10,19 +10,34 @@ namespace YDFrame.DALFactory
 	public partial class DbSession : IDbSession
     {
 	
-		private ISys_LoginLogRepository _Sys_LoginLogRepository;
-        public ISys_LoginLogRepository Sys_LoginLogRepository
+		private ISys_ErrorRepository _Sys_ErrorRepository;
+        public ISys_ErrorRepository Sys_ErrorRepository
         {
             get
             {
-                if(_Sys_LoginLogRepository == null)
+                if(_Sys_ErrorRepository == null)
                 {
 				
-                    _Sys_LoginLogRepository =AbstractFactory.CreateSys_LoginLogRepository();
+                    _Sys_ErrorRepository =AbstractFactory.CreateSys_ErrorRepository();
                 }
-                return _Sys_LoginLogRepository;
+                return _Sys_ErrorRepository;
             }
-            set { _Sys_LoginLogRepository = value; }
+            set { _Sys_ErrorRepository = value; }
+        }
+	
+		private ISys_LogRepository _Sys_LogRepository;
+        public ISys_LogRepository Sys_LogRepository
+        {
+            get
+            {
+                if(_Sys_LogRepository == null)
+                {
+				
+                    _Sys_LogRepository =AbstractFactory.CreateSys_LogRepository();
+                }
+                return _Sys_LogRepository;
+            }
+            set { _Sys_LogRepository = value; }
         }
 	
 		private ISys_MenuRepository _Sys_MenuRepository;

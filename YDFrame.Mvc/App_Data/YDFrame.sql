@@ -16,9 +16,18 @@ use YDFrame;
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('Sys_LoginLog')
+           where  id = object_id('Sys_Error')
             and   type = 'U')
-   drop table Sys_LoginLog
+   drop table Sys_Error
+go
+
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('Sys_Log')
+            and   type = 'U')
+   drop table Sys_Log
 go
 
 if exists (select 1
@@ -57,14 +66,28 @@ if exists (select 1
 go
 
 /*==============================================================*/
-/* Table: Sys_LoginLog                                          */
+/* Table: Sys_Error                                             */
 /*==============================================================*/
-create table Sys_LoginLog (
+create table Sys_Error (
+   Id                   int                  identity,
+   OccurTime            datetime             null default getdate(),
+   Level                varchar(255)         null,
+   Message              text                 null,
+   StackTrace           text                 null,
+   Origin               text                 null,
+   constraint PK_SYS_ERROR primary key (Id)
+)
+
+/*==============================================================*/
+/* Table: Sys_Log                                               */
+/*==============================================================*/
+create table Sys_Log (
    Id                   int                  identity,
    UserId               int                  null,
-   LoginTime            datetime             null default getdate(),
+   OccurTime            datetime             null default getdate(),
    LoginIp              varchar(16)          null,
-   LoginOutTime         datetime             null
+   Type                 int                  null,
+   constraint PK_SYS_LOG primary key (Id)
 )
 go
 

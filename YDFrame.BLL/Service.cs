@@ -12,11 +12,19 @@ using System.Threading.Tasks;
 namespace YDFrame.BLL
 {
 	
-	public partial class Sys_LoginLogService :BaseService<Sys_LoginLog>,ISys_LoginLogService
+	public partial class Sys_ErrorService :BaseService<Sys_Error>,ISys_ErrorService
     {
         public override void SetCurrentRepository()
         {
-            CurrentRepository = new Sys_LoginLogRepository();
+            CurrentRepository = new Sys_ErrorRepository();
+        }
+    }   
+	
+	public partial class Sys_LogService :BaseService<Sys_Log>,ISys_LogService
+    {
+        public override void SetCurrentRepository()
+        {
+            CurrentRepository = new Sys_LogRepository();
         }
     }   
 	
