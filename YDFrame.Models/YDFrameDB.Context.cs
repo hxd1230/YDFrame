@@ -35,5 +35,6 @@ namespace YDFrame.Models
         public virtual DbSet<WX_Type> WX_Type { get; set; }
         public virtual DbSet<Sys_Error> Sys_Error { get; set; }
         public virtual DbSet<Sys_Log> Sys_Log { get; set; }
+        public virtual DbSet<Sys_Icon> Sys_Icon { get; set; }
     }
 }

@@ -6,8 +6,9 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
+    <link href="~/Static/Easyui/themes/bootstrap/easyui.css" rel="stylesheet" />
+    @*<link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />*@
     <link href="~/Static/easyui/themes/icon.css" rel="stylesheet" />
-    <link href="~/Static/easyui/themes/default/easyui.css" rel="stylesheet" />
     <script src="~/Static/easyui/jquery.min.js"></script>
     <script src="~/Static/easyui/jquery.easyui.min.js"></script>
     <script>
@@ -16,17 +17,17 @@
         }
         function serializeForm(pms) {
             var _result = "";
-            var _isHide = 0;
+            var Enable = 0;
             if (!$("#txtIsHide").is(':checked')) {
-                _isHide = 1;
+                Enable = 1;
             }
             var _value = $("#fm").serialize();
             if (pms == "add") {
-                _result = $.param({ isHide: _isHide }) + "&" + _value;
+                _result = $.param({ Enable: Enable }) + "&" + _value;
             }
             else {
                 var _id = $('#dg').datagrid('getSelections')[0].id;
-                _result = $.param({ menuId: _id, txtIsHide: _isHide }) + "&" + _value;
+                _result = $.param({ menuId: _id, txtIsHide: Enable }) + "&" + _value;
             }
             _result;
             return _result;
@@ -125,7 +126,7 @@
                     $("input[name=txtName]").val(rows[0].text);
                     $("input[name=txtDesc]").val(rows[0].desc);
                     $("input[name=txtUrl]").val(rows[0].url);
-                    $("input[name=txtIsHide]").val(rows[0].isHide);
+                    $("input[name=txtIsHide]").val(rows[0].Enable);
                 }
             }
         }
@@ -167,7 +168,7 @@
                     { field: 'url', title: '菜单地址', width: 120 },
                     { field: 'desc', title: '描述', width: 120 },
                     { field: 'icon', title: '图标', width: 120 },
-                    { field: 'isHide', title: '是否可用', width: 120 },
+                    { field: 'Enable', title: '是否可用', width: 120 },
                 ]],
                 toolbar: [{
                     id: 'btnAdd',
@@ -194,10 +195,40 @@
             });
         })
     </script>
+    <style>
+        * {
+    font-size: 13px;
+}
+
+/*body {
+    background: #D2E0F2;
+}*/
+
+.tableForm {
+    border-collapse: collapse;
+}
+
+    .tableForm th {
+        text-align: right;
+        border: 1px solid #ccc;
+        padding: 3px;
+        background-color: #F5F5F5;
+        height: 25px;
+    }
+
+    .tableForm td {
+        text-align: left;
+        border: 1px solid #ccc;
+        padding: 3px;
+        background-color: white;
+        height: 25px;
+    }
+
+    </style>
 </head>
 <body>
     <table id="dg"></table>
-    <div id="dv" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:400px;height:400px;padding:10px;">
+    @*<div id="dv" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:400px;height:400px;padding:10px;">
         <form id="fm" style="padding:10px 20px 10px 40px;">
             <p>菜单名称：<input type="text" name="txtName"></p>
             <p>菜单地址：<input type="text" name="txtUrl"></p>
@@ -206,9 +237,87 @@
             <p>上级菜单：<select name="txtParentId" id="selMenu"></select></p>
             <div style="padding:5px;text-align:center;">
                 <a href="#" onclick="options(4,$('input[name=txtHidden]').val())" class=" easyui-linkbutton" icon="icon-ok">确定</a>
-                @*<a href="#" onclick="javascript: self.close();" class="easyui-linkbutton" icon="icon-cancel">Cancel</a>*@
+                @*<a href="#" onclick="javascript: self.close();" class="easyui-linkbutton" icon="icon-cancel">Cancel</a>
             </div>
+            <select id="comboxMenuIconTree" name="comboxMenuIconTree" class="easyui-combotree" data-options="url:'@Url.Action("GetIcons","SysIcon")',editable:false,valueField:'id',textField:'text',multiple:false" style="width:170px;height:22px;"></select>
+            <img style="cursor: pointer; vertical-align: middle;" onclick="$('#comboxMenuIconTree').combotree('clear');"
+                 alt="清空图标" title="清空图标" src="../Content/themes/icon/edit-clear.png" />
             <input type="hidden" name="txtHidden" value="add" />
+        </form>
+    </div>*@
+
+    <div id="dv" class="easyui-window" style="padding: 15px; title=" modal window" overflow hidden" data-options="modal:true,closed:true,iconCls:'icon-save'">
+        @*<div id="dv" class="easyui-dialog" style="padding: 15px; overflow: hidden">*@
+        <form id="MenuAddForm" method="post" action="">
+            <table class="tableForm" width="100%">
+                <tr>
+                    <th>
+                        菜单名称：
+                    </th>
+                    <td>
+                        <input type="text" name="txtMenuName" id="txtMenuName" class="easyui-validatebox textbox"
+                               data-options="required:true,validType:'length[2,20]'" style="width:170px;height:22px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        父节点：
+                    </th>
+                    <td>
+                        <input class="easyui-combotree" id="treeMenuParentId" name="treeMenuParentId"
+                               data-options="url: '/Menu/GetAllMenuTree',lines:true" style="width:170px;height:22px;" />
+                        <img style="cursor: pointer; vertical-align: middle;" onclick="$('#treeMenuParentId').combotree('clear');"
+                             alt="清空父节点" title="清空父节点" src="../Content/themes/icon/edit-clear.png" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        标识码：
+                    </th>
+                    <td>
+                        <input type="text" name="txtMenuCode" id="txtMenuCode" class="easyui-validatebox textbox"
+                               data-options="required:false,validType:'length[2,40]'" style="width:170px;height:22px;" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        链接地址：
+                    </th>
+                    <td>
+                        <input type="text" name="txtMenuLinkAddress" id="txtMenuLinkAddress" class="easyui-validatebox textbox"
+                               data-options="required:false,validType:'length[2,40]'" style="width:170px;height:22px;" />
+                    </td>
+                </tr>
+                @*<tr>
+                        <th>
+                            图标：
+                        </th>
+                        <td>
+                            <input type="text" name="txtMenuIcon" id="txtMenuIcon" class="easyui-validatebox textbox"
+                                   data-options="required:false,validType:'length[2,40]'" style="width:170px;height:22px;" />
+                        </td>
+                    </tr>*@
+                <tr>
+                    <th>
+                        图标：
+                    </th>
+                    <td>
+                        <select id="comboxMenuIconTree" name="comboxMenuIconTree" class="easyui-combotree" data-options="url:'@Url.Action("GetIcons","SysIcon")',editable:false,valueField:'id',textField:'text',multiple:false" style="width:170px;height:22px;"></select>
+                        <img style="cursor: pointer; vertical-align: middle;" onclick="$('#comboxMenuIconTree').combotree('clear');"
+                             alt="清空图标" title="清空图标" src="../Content/themes/icon/edit-clear.png" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        排序：
+                    </th>
+                    <td>
+                        <input type="number" name="txtMenuSort" id="txtMenuSort" value="1" class="easyui-numberspinner"
+                               data-options="min:1,max:100,editable:false" autocomplete="off" style="width:70px;height:22px;" />
+                    </td>
+                </tr>
+            </table>
         </form>
     </div>
 </body>

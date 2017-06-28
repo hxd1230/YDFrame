@@ -16,6 +16,14 @@ namespace YDFrame.DALFactory
             return obj as ISys_ErrorRepository;
         }
 		
+	    public static ISys_IconRepository CreateSys_IconRepository()
+        {
+            string classFulleName = ConfigUtil.GetAppSettings("NameSpace") + ".Sys_IconRepository";
+			string assembly = ConfigUtil.GetAppSettings("DalAssembly");
+            var obj  = CreateInstance( classFulleName,assembly);
+            return obj as ISys_IconRepository;
+        }
+		
 	    public static ISys_LogRepository CreateSys_LogRepository()
         {
             string classFulleName = ConfigUtil.GetAppSettings("NameSpace") + ".Sys_LogRepository";

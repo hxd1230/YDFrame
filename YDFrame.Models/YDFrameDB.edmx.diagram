@@ -15,6 +15,7 @@
         <EntityTypeShape EntityType="YDFrameModel.WX_Type" Width="1.5" PointX="0.75" PointY="3.75" />
         <EntityTypeShape EntityType="YDFrameModel.Sys_Error" Width="1.5" PointX="3.375" PointY="5.75" />
         <EntityTypeShape EntityType="YDFrameModel.Sys_Log" Width="1.5" PointX="0.75" PointY="6.75" />
+        <EntityTypeShape EntityType="YDFrameModel.Sys_Icon" Width="1.5" PointX="5.375" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

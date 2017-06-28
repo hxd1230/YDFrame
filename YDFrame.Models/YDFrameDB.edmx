@@ -16,6 +16,14 @@
           <Property Name="StackTrace" Type="text" />
           <Property Name="Origin" Type="text" />
         </EntityType>
+        <EntityType Name="Sys_Icon">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" />
+          <Property Name="CreateTime" Type="datetime" />
+        </EntityType>
         <EntityType Name="Sys_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -35,8 +43,9 @@
           <Property Name="ParentId" Type="int" />
           <Property Name="Url" Type="varchar" MaxLength="50" />
           <Property Name="Icon" Type="varchar" MaxLength="20" />
-          <Property Name="IsHide" Type="bit" />
+          <Property Name="Enable" Type="bit" />
           <Property Name="Description" Type="varchar" MaxLength="20" />
+          <Property Name="SortIndex" Type="int" />
         </EntityType>
         <EntityType Name="Sys_Role">
           <Key>
@@ -116,6 +125,7 @@
         </EntityType>
         <EntityContainer Name="YDFrameModelStoreContainer">
           <EntitySet Name="Sys_Error" EntityType="Self.Sys_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sys_Icon" EntityType="Self.Sys_Icon" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sys_Log" EntityType="Self.Sys_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sys_Menu" EntityType="Self.Sys_Menu" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sys_Role" EntityType="Self.Sys_Role" Schema="dbo" store:Type="Tables" />
@@ -141,6 +151,7 @@
           <EntitySet Name="WX_Type" EntityType="YDFrameModel.WX_Type" />
           <EntitySet Name="Sys_Error" EntityType="YDFrameModel.Sys_Error" />
           <EntitySet Name="Sys_Log" EntityType="YDFrameModel.Sys_Log" />
+          <EntitySet Name="Sys_Icon" EntityType="YDFrameModel.Sys_Icon" />
         </EntityContainer>
         <EntityType Name="Sys_Menu">
           <Key>
@@ -151,8 +162,9 @@
           <Property Name="ParentId" Type="Int32" />
           <Property Name="Url" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Icon" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="IsHide" Type="Boolean" />
           <Property Name="Description" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Enable" Type="Boolean" />
+          <Property Name="SortIndex" Type="Int32" />
         </EntityType>
         <EntityType Name="Sys_Role">
           <Key>
@@ -251,6 +263,14 @@
           <Property Name="LoginIp" Type="String" MaxLength="16" FixedLength="false" Unicode="false" />
           <Property Name="Type" Type="Int32" />
         </EntityType>
+        <EntityType Name="Sys_Icon">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CreateTime" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -260,8 +280,9 @@
           <EntitySetMapping Name="Sys_Menu">
             <EntityTypeMapping TypeName="YDFrameModel.Sys_Menu">
               <MappingFragment StoreEntitySet="Sys_Menu">
+                <ScalarProperty Name="SortIndex" ColumnName="SortIndex" />
+                <ScalarProperty Name="Enable" ColumnName="Enable" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="IsHide" ColumnName="IsHide" />
                 <ScalarProperty Name="Icon" ColumnName="Icon" />
                 <ScalarProperty Name="Url" ColumnName="Url" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
@@ -372,6 +393,15 @@
                 <ScalarProperty Name="LoginIp" ColumnName="LoginIp" />
                 <ScalarProperty Name="OccurTime" ColumnName="OccurTime" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sys_Icon">
+            <EntityTypeMapping TypeName="YDFrameModel.Sys_Icon">
+              <MappingFragment StoreEntitySet="Sys_Icon">
+                <ScalarProperty Name="CreateTime" ColumnName="CreateTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

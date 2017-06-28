@@ -20,6 +20,14 @@ namespace YDFrame.BLL
         }
     }   
 	
+	public partial class Sys_IconService :BaseService<Sys_Icon>,ISys_IconService
+    {
+        public override void SetCurrentRepository()
+        {
+            CurrentRepository = new Sys_IconRepository();
+        }
+    }   
+	
 	public partial class Sys_LogService :BaseService<Sys_Log>,ISys_LogService
     {
         public override void SetCurrentRepository()

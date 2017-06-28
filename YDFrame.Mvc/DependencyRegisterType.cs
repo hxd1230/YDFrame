@@ -44,6 +44,9 @@ namespace YDFrame.Mvc
 
             container.RegisterType<ISys_LogRepository, Sys_LogRepository>();
             container.RegisterType<ISys_LogService, Sys_LogService>();
+
+            container.RegisterType<ISys_IconRepository, Sys_IconRepository>();
+            container.RegisterType<ISys_IconService, Sys_IconService>();
         }
     }
 }

@@ -5,22 +5,24 @@ using System.Web;
 
 namespace YDFrame.Mvc.Models
 {
-    public class ParentMenu
+    public class MenuBase
     {
         public int id { get; set; }
-        public string name { get; set; }
-        //public int id { get; set; }
+        public string icon { get; set; }
         public string text { get; set; }
-        //public List<ChildrenMenu> cMenu { get; set; }
-        public List<ChildrenMenu> children { get; set; }
     }
-    public class ChildrenMenu
+    public class ParentMenu : MenuBase
     {
-        //public int id { get; set; }
-        public string text { get; set; }
-        public string name { get; set; }
-        //public string Name { get; set; }
+
+
+        public List<ChildrenMenu> children { get; set; }
+        //public string icon { get; set; }
+    }
+    public class ChildrenMenu : MenuBase
+    {
+        //public string text { get; set; }
         public string url { get; set; }
+
     }
     public class PowerParentMenu
     {

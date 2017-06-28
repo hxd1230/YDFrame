@@ -16,6 +16,11 @@ namespace YDFrame.IDAL
       
     }
 	
+	public partial interface ISys_IconRepository :IBaseRepository<Sys_Icon>
+    {
+      
+    }
+	
 	public partial interface ISys_LogRepository :IBaseRepository<Sys_Log>
     {
       

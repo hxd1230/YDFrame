@@ -23,14 +23,15 @@ namespace YDFrame.Mvc.Areas.Admin.Controllers
         {
             List<ParentMenu> menus = new List<ParentMenu>();
             List<Sys_Menu> all = _sysMenuService.GetMenuByUserName(userName);
-            List<Sys_Menu> pMenus = all.Where(c => c.ParentId == 0).ToList();
+            List<Sys_Menu> pMenus = all.Where(c => c.ParentId == 0).OrderBy(c => c.SortIndex).ToList();
             foreach (var item in pMenus)
             {
                 menus.Add(new ParentMenu
                 {
                     text = item.Name,
                     id = item.Id,
-                    children = GetSubNode(item.Id, all)
+                    children = GetSubNode(item.Id, all),
+                    icon = item.Icon
                 });
             }
             return Json(menus.ToArray(), JsonRequestBehavior.AllowGet);
@@ -38,13 +39,14 @@ namespace YDFrame.Mvc.Areas.Admin.Controllers
         private List<ChildrenMenu> GetSubNode(int parentId, List<Sys_Menu> menus)
         {
             List<ChildrenMenu> cMenus = new List<ChildrenMenu>();
-            List<Sys_Menu> pMenus = menus.Where(c => c.ParentId == parentId).ToList();
+            List<Sys_Menu> pMenus = menus.Where(c => c.ParentId == parentId).OrderBy(c => c.SortIndex).ToList();
             foreach (var item in pMenus)
             {
                 cMenus.Add(new ChildrenMenu
                 {
                     url = item.Url,
-                    text = "<a onclick='fun(this);' url='" + item.Url + "' href='javascript:;'>" + item.Name + "</a>"
+                    text = "<a onclick='fun(this);' url='" + item.Url + "' href='javascript:;'>" + item.Name + "</a>",
+                    icon = item.Icon
                 });
             }
             return cMenus;
@@ -72,7 +74,6 @@ namespace YDFrame.Mvc.Areas.Admin.Controllers
             {
                 menus.Add(new PowerParentMenu
                 {
-                    icon = item.Icon,
                     desc = item.Description,
                     text = item.Name,
                     id = item.Id,
@@ -119,7 +120,8 @@ namespace YDFrame.Mvc.Areas.Admin.Controllers
                 {
                     text = item.Name,
                     id = item.Id,
-                    children = GetSubNode(item.Id, all)
+                    children = GetSubNode(item.Id, all),
+                    icon = item.Icon
                 });
             }
             return Json(new { total = menus.Count, rows = menus.ToArray() }, JsonRequestBehavior.AllowGet);
@@ -136,7 +138,7 @@ namespace YDFrame.Mvc.Areas.Admin.Controllers
                 Name = Request["txtName"],
                 Url = Request["txtUrl"],
                 ParentId = Request["txtParentId"].ToInt32(),
-                IsHide = Request["isHide"].ToInt32() == 1 ? true : false
+                Enable = Request["Enable"].ToInt32() == 1 ? true : false
             };
             if (null != _sysMenuService.AddEntity(entity))
             {
@@ -191,7 +193,7 @@ namespace YDFrame.Mvc.Areas.Admin.Controllers
                 Description = Request["txtDesc"],
                 Name = Request["txtName"],
                 Url = Request["txtUrl"],
-                IsHide = Request["isHide"].ToBoolean(),
+                Enable = Request["Enable"].ToBoolean(),
                 ParentId = Convert.ToInt32(Request["txtParentId"])
             };
             Notify<bool> notify = new Notify<bool>();

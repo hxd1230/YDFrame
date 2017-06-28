@@ -100,11 +100,20 @@ create table Sys_Menu (
    ParentId             int                  null,
    Url                  varchar(50)          null,
    Icon                 varchar(20)          null,
-   IsHide               bit                  null default 0,
+   Enable               bit                  null default 0,
    Description          varchar(20)          null,
+   SortIndex            int                  null,
    constraint PK_SYS_MENU primary key (Id)
 )
 go
+
+--select * from sys_menu
+--重命名
+--sp_rename 'Sys_Menu.IsHide','Enable','column'
+--change是表名，times是原来的列名，times1是新的列名
+--alter table Sys_Menu
+--add SortIndex int
+
 
 /*==============================================================*/
 /* Table: Sys_Role                                              */
@@ -880,8 +889,35 @@ and b.RoleId = c.Id
 
 insert into wx_type values(N'服务号'),(N'订阅号')
 
+/*==============================================================*/
+/* Table: Sys_Icon                                              */
+/*==============================================================*/
+create table Sys_Icon (
+   Id                   int                  identity,
+   Name                 varchar(255)         null,
+   CreateTime           datetime             null default getdate(),
+   constraint PK_SYS_ICON primary key (Id)
+)
+go
+
+if exists (select 1 from  sys.extended_properties
+           where major_id = object_id('Sys_Icon') and minor_id = 0)
+begin 
+   declare @CurrentUser sysname 
+select @CurrentUser = user_name() 
+execute sp_dropextendedproperty 'MS_Description',  
+   'user', @CurrentUser, 'table', 'Sys_Icon' 
+ 
+end 
 
 
+select @CurrentUser = user_name() 
+execute sp_addextendedproperty 'MS_Description',  
+   '系统图标', 
+   'user', @CurrentUser, 'table', 'Sys_Icon'
+go
 
-
-select * from wx_type
+insert into sys_icon(name) values('icon-search')
+insert into sys_icon(name) values('icon-remove')
+insert into sys_icon(name) values('icon-clear')
+select * from sys_icon

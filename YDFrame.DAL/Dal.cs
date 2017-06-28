@@ -17,6 +17,11 @@ namespace YDFrame.DAL
 
     }
 		
+	public partial class Sys_IconRepository :BaseRepository<Sys_Icon>,ISys_IconRepository
+    {
+
+    }
+		
 	public partial class Sys_LogRepository :BaseRepository<Sys_Log>,ISys_LogRepository
     {
 

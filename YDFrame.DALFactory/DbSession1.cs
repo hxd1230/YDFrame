@@ -25,6 +25,21 @@ namespace YDFrame.DALFactory
             set { _Sys_ErrorRepository = value; }
         }
 	
+		private ISys_IconRepository _Sys_IconRepository;
+        public ISys_IconRepository Sys_IconRepository
+        {
+            get
+            {
+                if(_Sys_IconRepository == null)
+                {
+				
+                    _Sys_IconRepository =AbstractFactory.CreateSys_IconRepository();
+                }
+                return _Sys_IconRepository;
+            }
+            set { _Sys_IconRepository = value; }
+        }
+	
 		private ISys_LogRepository _Sys_LogRepository;
         public ISys_LogRepository Sys_LogRepository
         {

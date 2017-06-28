@@ -16,6 +16,11 @@ namespace YDFrame.IBLL
        
     }   
 	
+	public partial interface ISys_IconService : IBaseService<Sys_Icon>
+    {
+       
+    }   
+	
 	public partial interface ISys_LogService : IBaseService<Sys_Log>
     {
        
